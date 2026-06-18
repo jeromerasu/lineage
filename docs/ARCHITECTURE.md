@@ -13,12 +13,16 @@ System-level decisions for Lineage. Reflects locked-in choices from initial desi
 
 ### Backend services
 
+All four backend services are Python + FastAPI. See [ADR-001](decisions/ADR-001-tech-stack.md) for the decision rationale.
+
 | Service | Tech | Responsibilities |
 |---|---|---|
-| `lineage-api` | Java + Spring Boot | REST API for trees, person cards, auth, invites, role permissions. Owns all persistence to Postgres. |
-| `lineage-analysis-worker` | Python + FastAPI | Async job processor for AI hereditary-risk analysis. Graph traversal (`networkx`), ClinVar/OMIM cross-reference, LLM synthesis via Anthropic Python SDK. Receives jobs via Redis Streams. |
-| `lineage-sync-server` | Java + Spring WebSocket + STOMP | Real-time multiplayer canvas — presence cursors, card edits, last-write-wins conflict resolution. |
-| `lineage-genetics-parser` | Java + Spring Boot | Parses raw genome uploads (.txt / .zip / .vcf, 23andMe / AncestryDNA formats). Normalizes SNP data, encrypts at rest. |
+| `lineage-api` | Python + FastAPI + SQLAlchemy 2.0 (async) + Alembic | REST API for trees, person cards, auth, invites, role permissions. Owns all persistence to Postgres. |
+| `lineage-analysis-worker` | Python + FastAPI + Celery/Dramatiq + Anthropic SDK + networkx + pandas | Async job processor for AI hereditary-risk analysis. Graph traversal, ClinVar/OMIM cross-reference, LLM synthesis. Receives jobs via Redis Streams. |
+| `lineage-sync-server` | Python + Starlette/FastAPI WebSocket + uvicorn | Real-time multiplayer canvas — presence cursors, card edits, last-write-wins conflict resolution. Python asyncio handles v1 WebSocket load. |
+| `lineage-genetics-parser` | Python + FastAPI + biopython + cyvcf2 | Parses raw genome uploads (.txt / .zip / .vcf, 23andMe / AncestryDNA formats). Normalizes SNP data, encrypts at rest. biopython + cyvcf2 are the dominant ecosystem here. |
+
+**Python tooling across all services:** `uv` (package management), `pyproject.toml` (project config), Pydantic v2 (DTOs + validation), Ruff (lint + format), mypy --strict (type checking), pytest + pytest-asyncio (tests). Python 3.12+.
 
 Backend split intentionally — different scaling characteristics (LLM analysis is bursty, WebSocket is long-lived connections, REST is short request/response).
 

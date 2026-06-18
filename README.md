@@ -17,16 +17,16 @@ Lineage helps families document, share, and reason about their medical history a
 
 | Surface | Tech |
 |---|---|
-| Web | Next.js + TypeScript + React |
+| Web | Next.js + TypeScript |
 | Mobile (iOS + Android) | React Native + Expo + TypeScript |
-| `lineage-api` | Java + Spring Boot |
-| `lineage-analysis-worker` | Python + FastAPI |
-| `lineage-sync-server` | Java + Spring WebSocket |
-| `lineage-genetics-parser` | Java + Spring Boot |
+| `lineage-api` | Python + FastAPI |
+| `lineage-analysis-worker` | Python + FastAPI + Anthropic SDK |
+| `lineage-sync-server` | Python + Starlette/FastAPI WebSocket |
+| `lineage-genetics-parser` | Python + FastAPI + biopython |
 | `packages/types` | Shared TypeScript types (generated from OpenAPI) |
-| Datastore | PostgreSQL (adjacency-list graph model) |
-| Real-time | WebSocket, last-write-wins with toast on conflict |
-| LLM | Anthropic Claude (managed) with PII-stripping anonymization layer |
+| Datastore | PostgreSQL (adjacency-list graph) |
+| Real-time | WebSocket, last-write-wins with toast |
+| LLM | Anthropic Claude (managed) with PII-stripping |
 
 ## Approach
 
